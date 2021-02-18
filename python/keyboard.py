@@ -14,6 +14,7 @@ class KeyBoard(wx.Frame):
         self.bn_size = (40, 40)
         self.color_default = wx.SystemSettings.GetColour(wx.SYS_COLOUR_BACKGROUND)
         self.color_pushed  = 'LIGHT GREY'
+        self.color_pushed  = 'yellow'
 
         # change with your TextCtrl
         self.input = wx.TextCtrl(self)
@@ -27,15 +28,18 @@ class KeyBoard(wx.Frame):
     def init_ui(self):
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(self.input, 0, wx.EXPAND, 0)
-        vbox.Add(self.keyboard_ui(self.char_case), 0, wx.ALL, 5)
+        vbox.Add(self.keyboard_ui(self.keymap1, self.char_case), 0, wx.ALL, 5)
         self.SetSizer(vbox)
 
     def characters(self):
+
         # Matrix of keyboard
-        self.line1 = [ 'bn_1', 'bn_2', 'bn_3', 'bn_4', 'bn_5', 'bn_6', 'bn_7', 'bn_8', 'bn_9',   'bn_0'   , 'OK'    ]
-        self.line2 = [ 'bn_q', 'bn_w', 'bn_e', 'bn_r', 'bn_t', 'bn_y', 'bn_u', 'bn_i', 'bn_o',   'bn_p'   , 'BS'    ]
-        self.line3 = [ 'CL'  , 'bn_a', 'bn_s', 'bn_d', 'bn_f', 'bn_g', 'bn_h', 'bn_j', 'bn_k',   'bn_l'   , 'C'     ]
-        self.line4 = [ 'SH'  , 'bn_z', 'bn_x', 'bn_c', 'bn_v', 'bn_b', 'bn_n', 'bn_m', 'bn_dot', 'bn_dash', 'Close' ]
+        self.keymap1 = [
+                [ 'bn_1', 'bn_2', 'bn_3', 'bn_4', 'bn_5', 'bn_6', 'bn_7', 'bn_8', 'bn_9',   'bn_0'   , 'OK'    ],
+                [ 'bn_q', 'bn_w', 'bn_e', 'bn_r', 'bn_t', 'bn_y', 'bn_u', 'bn_i', 'bn_o',   'bn_p'   , 'BS'    ],
+                [ 'CL'  , 'bn_a', 'bn_s', 'bn_d', 'bn_f', 'bn_g', 'bn_h', 'bn_j', 'bn_k',   'bn_l'   , 'C'     ],
+                [ 'SH'  , 'bn_z', 'bn_x', 'bn_c', 'bn_v', 'bn_b', 'bn_n', 'bn_m', 'bn_dot', 'bn_dash', 'Close' ]
+        ]
 
         # buttons - 1: normal - 2: shift
         self.bn = {
@@ -82,38 +86,20 @@ class KeyBoard(wx.Frame):
 
                 'SH': { '1': 'SH', '2': 'SH' },    # Shift
                 'CL': { '1': 'CL', '2': 'CL' },    # Caps Locks
-                'BS': { '1': '<',  '2': '<'  },     # Back Space
-                'C':  { '1': 'C',  '2': 'C'  },     # Clear
+                'BS': { '1': '<',  '2': '<'  },    # Back Space
+                'C':  { '1': 'C',  '2': 'C'  },    # Clear
                 'OK': { '1': 'OK', '2': 'OK' },
                 'Close': { '1': 'Close', '2': 'Close' },
                 }
 
-    def keyboard_ui(self, ccase):
+    def keyboard_ui(self, keymap, ccase):
         vbox = wx.BoxSizer(wx.VERTICAL)
-
-        # LINE 1
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-        for i in self.line1:
-            self.bn[i]['obj'] = wx.Button(self, label=self.bn[i][ccase], size=self.bn_size)
-            box1.Add( self.bn[i]['obj'] )
-
-        # LINE 2
-        box2 = wx.BoxSizer(wx.HORIZONTAL)
-        for i in self.line2:
-            self.bn[i]['obj'] = wx.Button(self, label=self.bn[i][ccase], size=self.bn_size)
-            box2.Add( self.bn[i]['obj'] )
-
-        # LINE 3
-        box3 = wx.BoxSizer(wx.HORIZONTAL)
-        for i in self.line3:
-            self.bn[i]['obj'] = wx.Button(self, label=self.bn[i][ccase], size=self.bn_size)
-            box3.Add( self.bn[i]['obj'] )
-
-        # LINE 4
-        box4 = wx.BoxSizer(wx.HORIZONTAL)
-        for i in self.line4:
-            self.bn[i]['obj'] = wx.Button(self, label=self.bn[i][ccase], size=self.bn_size)
-            box4.Add( self.bn[i]['obj'] )
+        for row in keymap:
+            hbox = wx.BoxSizer(wx.HORIZONTAL)
+            for k in row:
+                self.bn[k]['obj'] = wx.Button(self, label=self.bn[k][ccase], size=self.bn_size)
+                hbox.Add( self.bn[k]['obj'] )
+            vbox.Add(hbox)
 
         # Bind
         for k in self.bn.keys():
@@ -126,11 +112,6 @@ class KeyBoard(wx.Frame):
         self.bn['C']['obj'].Bind(wx.EVT_BUTTON, self.OnClear)
         self.bn['SH']['obj'].Bind(wx.EVT_BUTTON, self.OnShift)
         self.bn['CL']['obj'].Bind(wx.EVT_BUTTON, self.OnCapsLk)
-
-        vbox.Add(box1)
-        vbox.Add(box2)
-        vbox.Add(box3)
-        vbox.Add(box4)
 
         return vbox
 
