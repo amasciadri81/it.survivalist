@@ -1,0 +1,51 @@
+
+
+  +------+     +----------+                     +----------------+                      +----------+     +------+
+  |      |     | Mikrotik | 1.1.1.1             | Network        |      192.168.168.174 | Mikrotik |     |      |
+  |      +-----+  Site 1  +---------------------+ Firewall & NAT +----------------------+  Site 2  +-----+      |
+  |      |     | [Server] | 192.168.19.8        |                |                      | [Client] |     |      |
+  +------+     +----------+                     +----------------+                      +----------+     +------+
+
+Site 1
+    Public IP -> 1.1.1.1
+    Local IP  -> 192.168.19.8
+    Nat Ports -> UDP 500, 4500
+
+Site 2
+    192.168.168.174 - Mikrotik IP
+
+
+    
+=================
+ SITE 1 "Server"
+=================
+# IPSEC
+#/ip ipsec profile add name=eoip hash-algorithm=md5 enc-algorithm=des dh-group=modp768 nat-traversal=no
+#/ip ipsec proposal add name=eoip auth-algorithms=md5 enc-algorithms=des pfs-group=modp768
+/ip ipsec peer add name=eoip passive=yes profile=eoip
+/ip ipsec identity add peer=eoip secret=thisisnotasecurepsk
+/ip ipsec policy add src-address=192.168.19.8/32 src-port=any dst-address=192.168.168.174/32 dst-port=any tunnel=yes action=encrypt proposal=eoip peer=eoip
+
+# EoIP
+/interface eoip add name=eoip-tunnel remote-address=192.168.168.174 local-address=192.168.19.8 tunnel-id=101
+/interface bridge add name=bridge-eoip
+/interface bridge port add bridge=bridge-eoip interface=eoip-tunnel 
+/interface bridge port add bridge=bridge-eoip interface=ether2
+
+
+=================
+ SITE 2 "client"
+=================
+# IPSEC
+#/ip ipsec profile add name=eoip hash-algorithm=md5 enc-algorithm=des dh-group=modp768 nat-traversal=no
+#/ip ipsec proposal add name=eoip auth-algorithms=md5 enc-algorithms=des pfs-group=modp768
+/ip ipsec peer add address=1.1.1.1/32 name=eoip profile=eoip
+/ip ipsec identity add peer=eoip secret=thisisnotasecurepsk
+/ip ipsec policy add src-address=192.168.168.174/32 src-port=any dst-address=192.168.19.8/32 dst-port=any tunnel=yes action=encrypt proposal=eoip peer=eoip
+
+# EoIP
+/interface eoip add name=eoip-tunnel remote-address=192.168.19.8 local-address=192.168.168.174 tunnel-id=101
+/interface bridge add name=bridge-eoip
+/interface bridge port add bridge=bridge-eoip interface=eoip-tunnel 
+/interface bridge port add bridge=bridge-eoip interface=ether2
+
