@@ -249,7 +249,7 @@ def example_list():
     interact(child)
 
 def example_empty_list():
-    child = ssh(get_host({}), 'pi', 'raspberrypi', show_login=True)
+    child = ssh(get_host({}), 'admin', 'admin', show_login=True)
     child.sendline('uptime')
     expect_prompt(child)
     interact(child)
