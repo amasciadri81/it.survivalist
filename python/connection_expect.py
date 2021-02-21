@@ -8,23 +8,29 @@
 #
 
 import pexpect
-import sys, base64, socket
+import sys, base64, socket, re
 
 
-IAD_PROMPT = r'> ?$'
-COMMAND_PROMPT = r'[#\$~] ?$'
+# trying to use $ to match the end of line would not work
+IAD_PROMPT = r'> ?'
+COMMAND_PROMPT = r'[#~\$] ?'
 
 TERMINAL_PROMPT = r'Terminal type\?'
 TERMINAL_TYPE = 'vt100'
 
 SSH_NEWKEY = r'Are you sure you want to continue connecting \(yes/no\)\?'
 
-USERNAME_PROMPT = '([Uu]ser)?[Nn]ame.*: ?$'
-PASSWORD_PROMPT = '[Pp]ass[wo][wo]rd: ?$'
+USERNAME_PROMPT = r'([Uu]ser)?[Nn]ame.*: ?'
+PASSWORD_PROMPT = r'[Pp]ass[wo][wo]rd: ?'
 
 
 def usage():
-    print(sys.argv[0], " [ip address]")
+    print()
+    print(sys.argv[0], " <arg>" )
+    print("      list : shows the list of saved ips")
+    print("      ip address or saved name")
+    print()
+    sys.exit()
 
 
 def show_cmds(child, show):
@@ -53,7 +59,7 @@ def ssh(host, user=None, password=None, port=22, iad_cmd=None, show_login=False)
     options = '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 
     cmd = 'ssh %s -p %s -l %s %s'%(options, port, user, host)
-    return _connection(cmd, user, password, port, iad_cmd, show_login)
+    return _connection(cmd, user, password, iad_cmd, show_login)
 
 
 def telnet(host, user=None, password=None, port=23, iad_cmd=None, show_login=False):
@@ -87,11 +93,12 @@ def expect_prompt(child, iad_cmd=None, username=None, password=None):
     username   username
     password   password ASCII
     """
+    timeout=10
 
-    i = child.expect([pexpect.TIMEOUT, '([Ff]ailed|[Ff]ail|[Df]enied)', SSH_NEWKEY, TERMINAL_PROMPT, USERNAME_PROMPT, PASSWORD_PROMPT, IAD_PROMPT, COMMAND_PROMPT, pexpect.EOF])
+    i = child.expect([pexpect.TIMEOUT, '([Ff]ailed|[Ff]ail|[Df]enied)', SSH_NEWKEY, TERMINAL_PROMPT, USERNAME_PROMPT, PASSWORD_PROMPT, IAD_PROMPT, COMMAND_PROMPT, pexpect.EOF], timeout=timeout)
 
     if i == 0: # Timeout
-        print('\n', 'ERROR: ', child.before.decode(), child.after)
+        print('\n', 'ERROR: TIMEOUT')
         sys.exit (1)
 
     elif i == 1: # fail denied
@@ -131,38 +138,53 @@ def expect_prompt(child, iad_cmd=None, username=None, password=None):
         return
 
     elif i == 8: # EOF
-        print('\n', 'ERROR: ', child.before.decode().lstrip(), child.after.decode().lstrip())
+        print('\n', 'ERROR: ', child.before, child.after)
         sys.exit (1)
 
     else:
-        print('\n', 'ERROR: ', child.before.decode().lstrip(), child.after.decode().lstrip())
+        print('\n', 'ERROR: ', child.before, child.after)
         sys.exit (1)
 
 
-def ssh_login_args(host, user, password, port=21, iad_cmd='sh'):
+def get_host(list_ip):
     """
-    if script has 1 arg, set it as host 
+    check the arguments of script
+    check if arg is name of ip addres saved in list_ip
+    return the ip address of host
     """
-
-    if len(sys.argv) > 3 :
+    # no args
+    if len(sys.argv) == 1:
         usage()
-        sys.exit (1)
 
-    elif len(sys.argv) > 1:
-        for v in range(1, len(sys.argv)): 
-            if sys.argv[v] == 's':
-                iad_to_prompt = False
-            try:
-                socket.inet_aton(sys.argv[v])
-                host = sys.argv[v]
-            except socket.error:
-                None
+    # list args
+    elif sys.argv[1] == 'list':
+        for k, v in sorted(list_ip.items()):
+            #print(f'{k:18} {v}')
+            print(k, v)
+        print()
+        sys.exit()
 
-    return ssh_login(host, user, password, port=port, iad_to_prompt=iad_to_prompt)
+    # IP
+    elif re.match('(\d{1,3}\.){3}\d{1,3}', sys.argv[1]):
+        return sys.argv[1]
+
+    # string not ip
+    elif sys.argv[1] in list_ip:
+        return list_ip[sys.argv[1]]
+
+    else:
+        usage()
+
 
 
 # -----------------------------------------------------------------------------------
 """
+this script expect 2 different prompt:
+    IAD_PROMPT     : is the 1st prompt; 
+                     from IAD_PROMPT you can access to COMMAND_PROMPT by iad_cmd
+                     if IAD_PROPMPT is not matched, iad_cmd is ignored
+    COMMAND_PROMPT : is the final prompt
+
 functions: 
     show_cmds(child, True)     show/hide commands output
     interact(child)            allow user interacting wiht shell         
@@ -191,16 +213,18 @@ def example2():
     child = ssh('192.168.1.254', 'admin', 'cGFzc3dvcmQ=', port=1053, iad_cmd='sh', show_login=True)
     interact(child)
 
-def example2():
+def example3():
     # connect to dev by ssh
-    # launch 'show sysinfo' in iad_prompt
-    # access to command_prompt and launch uptime command
     child = ssh('192.168.1.254', 'admin', 'password', port=21, show_login=False)
     show_cmds(child, True)
+    # launch show sysinfo
     child.sendline('show sysinfo')
+    # pass from iad_prompt to command_prompt
     expect_prompt(child, iad_cmd='sh')
+    # launch uptime
     child.sendline('uptime')
     expect_prompt(child)
+    # interact
     interact(child)
 
 def example_ftp():
@@ -216,8 +240,22 @@ def example_cisco():
     expect_prompt(child, password='cisco')
     interact(child)
 
+def example_list():
+    ip_list = {
+        'ip1': '192.168.1.1',
+        'ip2': '192.168.1.2'
+    }
+    child = ssh(get_host(ip_list), 'admin', 'admin', show_login=True)
+    interact(child)
+
+def example_empty_list():
+    child = ssh(get_host({}), 'pi', 'raspberrypi', show_login=True)
+    child.sendline('uptime')
+    expect_prompt(child)
+    interact(child)
+
+
 
 if __name__ == '__main__':
-    example1()
-
+    example_empty_list()
 
