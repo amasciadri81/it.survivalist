@@ -27,8 +27,6 @@ class KeyBoard(wx.Frame):
         self.characters()
         self.init_ui()
 
-        print(self.GetSize())
-
     def init_ui(self):
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(self.input, 0, wx.EXPAND, 0)
@@ -52,20 +50,20 @@ class KeyBoard(wx.Frame):
         SYM: symbols button pressed 
         """
         self.bn = {
-                'bn_a': { 'LO': 'a', 'SH': 'A', 'SYM': '@' },
-                'bn_b': { 'LO': 'b', 'SH': 'B', 'SYM': '.' },
-                'bn_c': { 'LO': 'c', 'SH': 'C', 'SYM': '.' },
-                'bn_d': { 'LO': 'd', 'SH': 'D', 'SYM': '.' },
+                'bn_a': { 'LO': 'a', 'SH': 'A', 'SYM': "'" },
+                'bn_b': { 'LO': 'b', 'SH': 'B', 'SYM': ',' },
+                'bn_c': { 'LO': 'c', 'SH': 'C', 'SYM': 'é' },
+                'bn_d': { 'LO': 'd', 'SH': 'D', 'SYM': '@' },
                 'bn_e': { 'LO': 'e', 'SH': 'E', 'SYM': '[' },
-                'bn_f': { 'LO': 'f', 'SH': 'F', 'SYM': '.' },
-                'bn_g': { 'LO': 'g', 'SH': 'G', 'SYM': '.' },
-                'bn_h': { 'LO': 'h', 'SH': 'H', 'SYM': '.' },
+                'bn_f': { 'LO': 'f', 'SH': 'F', 'SYM': 'ò' },
+                'bn_g': { 'LO': 'g', 'SH': 'G', 'SYM': 'à' },
+                'bn_h': { 'LO': 'h', 'SH': 'H', 'SYM': 'ù' },
                 'bn_i': { 'LO': 'i', 'SH': 'I', 'SYM': '>' },
-                'bn_j': { 'LO': 'j', 'SH': 'J', 'SYM': '.' },
-                'bn_k': { 'LO': 'k', 'SH': 'K', 'SYM': '.' },
-                'bn_l': { 'LO': 'l', 'SH': 'L', 'SYM': '.' },
-                'bn_m': { 'LO': 'm', 'SH': 'M', 'SYM': '.' },
-                'bn_n': { 'LO': 'n', 'SH': 'N', 'SYM': '.' },
+                'bn_j': { 'LO': 'j', 'SH': 'J', 'SYM': 'ì' },
+                'bn_k': { 'LO': 'k', 'SH': 'K', 'SYM': '?' },
+                'bn_l': { 'LO': 'l', 'SH': 'L', 'SYM': '+' },
+                'bn_m': { 'LO': 'm', 'SH': 'M', 'SYM': ';' },
+                'bn_n': { 'LO': 'n', 'SH': 'N', 'SYM': ':' },
                 'bn_o': { 'LO': 'o', 'SH': 'O', 'SYM': '_' },
                 'bn_p': { 'LO': 'p', 'SH': 'P', 'SYM': '-' },
                 'bn_q': { 'LO': 'q', 'SH': 'Q', 'SYM': '\\'},
@@ -75,17 +73,17 @@ class KeyBoard(wx.Frame):
                 'bn_u': { 'LO': 'u', 'SH': 'U', 'SYM': '<' },
                 'bn_v': { 'LO': 'v', 'SH': 'V', 'SYM': '.' },
                 'bn_w': { 'LO': 'w', 'SH': 'W', 'SYM': '|' },
-                'bn_x': { 'LO': 'x', 'SH': 'X', 'SYM': '.' },
+                'bn_x': { 'LO': 'x', 'SH': 'X', 'SYM': 'è' },
                 'bn_y': { 'LO': 'y', 'SH': 'Y', 'SYM': '}' },
-                'bn_z': { 'LO': 'z', 'SH': 'Z', 'SYM': '.' },
+                'bn_z': { 'LO': 'z', 'SH': 'Z', 'SYM': '^' },
 
                 'bn_0': { 'LO': '0', 'SH': '0', 'SYM': '=' },
                 'bn_1': { 'LO': '1', 'SH': '1', 'SYM': '!' },
                 'bn_2': { 'LO': '2', 'SH': '2', 'SYM': '"' },
-                'bn_3': { 'LO': '3', 'SH': '3', 'SYM': ''  },
+                'bn_3': { 'LO': '3', 'SH': '3', 'SYM': '€'  },
                 'bn_4': { 'LO': '4', 'SH': '4', 'SYM': '$' },
                 'bn_5': { 'LO': '5', 'SH': '5', 'SYM': '%' },
-                'bn_6': { 'LO': '6', 'SH': '6', 'SYM': '&' },
+                'bn_6': { 'LO': '6', 'SH': '6', 'SYM': '&&' },
                 'bn_7': { 'LO': '7', 'SH': '7', 'SYM': '/' },
                 'bn_8': { 'LO': '8', 'SH': '8', 'SYM': '(' },
                 'bn_9': { 'LO': '9', 'SH': '9', 'SYM': ')' },
@@ -128,7 +126,6 @@ class KeyBoard(wx.Frame):
         # Bind buttons
         for k in self.bn.keys():
             if k[0:3] == 'bn_':
-                print(k)
                 self.bn[k]['obj'].Bind(wx.EVT_BUTTON, self.OnButton)
 
         # if keep pressed BackSlash, clear input
@@ -146,13 +143,17 @@ class KeyBoard(wx.Frame):
         return vbox
 
     def OnButton(self, e):
-        self.input.AppendText( e.GetEventObject().GetLabel() )
+        char = e.GetEventObject().GetLabel() 
+        # manage &&
+        if len(char) == 2:
+            char = char[:1]
+
+        self.input.AppendText(char)
         if self.shift:
             self.shift = False
             self.change_layout('LO')
 
     def OnShift(self, e):
-        print(e.GetTimestamp())
         self.shift = True
         self.change_layout('SH')
 
