@@ -1,0 +1,7 @@
+apt install xrdp
+
+/etc/NetworkManager/NetworkManager.conf
+auth-polkit=false 
+
+
+
