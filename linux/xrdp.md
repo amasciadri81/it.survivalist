@@ -6,7 +6,7 @@ sudo apt install xrdp
 ```
 
 ## Multiple Connection
-In Deban based distribution, you could not connect to xRDP if the same user is logged in to the machine's graphical console ([_Error "Could not acquire name on session bus"_); cause is that dbus-user-session surrently doesn't support multiple graphical sessions per user.
+In Deban based distribution, you could not connect to xRDP if the same user is logged in to the machine's graphical console ([_Error "Could not acquire name on session bus"_); cause is that _dbus-user-session_ surrently doesn't support multiple graphical sessions per user.
 You can fix it in this way:
 ```sh
 sudo apt remove dbus-user-session
