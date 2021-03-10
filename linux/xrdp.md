@@ -29,3 +29,5 @@ restart NetworkManager
 ```sh
 sudo systemctl restart NetworkManager
 ```
+## Known Problem
+If you try to connect to WiFi network by _nm-app_, the popup of passphrase will be shoed in machine's graphical console.
