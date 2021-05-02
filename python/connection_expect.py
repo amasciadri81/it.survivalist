@@ -6,6 +6,32 @@
 # SET VI TAB FOR PYTHON
 # set expandtab ts=4 sw=4 ai
 #
+# -----------------------------------------------------------------------------------
+"""
+this script expect 2 different prompt:
+    IAD_PROMPT     : is the 1st prompt; 
+                     from IAD_PROMPT you can access to COMMAND_PROMPT by iad_cmd
+                     if IAD_PROPMPT is not matched, iad_cmd is ignored
+    COMMAND_PROMPT : is the final prompt
+
+functions: 
+    show_cmds(child, True)     show/hide commands output
+    interact(child)            allow user interacting wiht shell         
+
+    expect_prompt(child)
+        iad_cmd       cmd to pass from IAD_PROPMPT to COMMAND_PROMPT  [default: None]
+        username      username  [default: None]
+        password      password ASCII   [default: None]
+
+    ssh, telnet, ftp
+        host          host ip
+        user          username  [default: None]
+        password      password, ASCII or base64 encrypted "echo -n password | base64"  [default: None]
+        port          host port  [default: protocol std port]
+        iad_cmd       command access to prompt from iad shell  [default: None]
+        show_login    True|False -> showing on screen the commands of script and answers of server  [default: False]
+"""
+
 
 import pexpect
 import sys, base64, socket, re
@@ -175,33 +201,12 @@ def get_host(list_ip):
     else:
         usage()
 
-
-
-# -----------------------------------------------------------------------------------
-"""
-this script expect 2 different prompt:
-    IAD_PROMPT     : is the 1st prompt; 
-                     from IAD_PROMPT you can access to COMMAND_PROMPT by iad_cmd
-                     if IAD_PROPMPT is not matched, iad_cmd is ignored
-    COMMAND_PROMPT : is the final prompt
-
-functions: 
-    show_cmds(child, True)     show/hide commands output
-    interact(child)            allow user interacting wiht shell         
-
-    expect_prompt(child)
-        iad_cmd       cmd to pass from IAD_PROPMPT to COMMAND_PROMPT  [default: None]
-        username      username  [default: None]
-        password      password ASCII   [default: None]
-
-    ssh, telnet, ftp
-        host          host ip
-        user          username  [default: None]
-        password      password, ASCII or base64 encrypted "echo -n password | base64"  [default: None]
-        port          host port  [default: protocol std port]
-        iad_cmd       command access to prompt from iad shell  [default: None]
-        show_login    True|False -> showing on screen the commands of script and answers of server  [default: False]
-"""
+        
+        
+        
+#################
+# MAIN EXAMPLES #
+#################
 
 def example1():
     # connect to dev by ssh - doesn't show login commands
@@ -215,7 +220,7 @@ def example2():
 
 def example3():
     # connect to dev by ssh
-    child = ssh('192.168.1.254', 'admin', 'password', port=21, show_login=False)
+    child = ssh('192.168.1.254', 'admin', 'password', port=22, show_login=False)
     show_cmds(child, True)
     # launch show sysinfo
     child.sendline('show sysinfo')
