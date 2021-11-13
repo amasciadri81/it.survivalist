@@ -23,7 +23,7 @@ https://github.com/genieacs/genieacs-gui/wiki
 
 Installation
 ------------
-For installation, follow the the [GenieACS installation guide](http://docs.genieacs.com/en/latest/installation-guide.html), or you can copy and past the commands below (for Debian).
+For installation, you can follow the the [GenieACS installation guide](http://docs.genieacs.com/en/latest/installation-guide.html), or can copy and past the commands below (for Debian 64bit).
 
 ```
 sudo -i
@@ -239,6 +239,8 @@ Preset
 	Precondition that will trigger the Preset, it uses SQL language.  
 	*Ex:* `(Device.DeviceInfo.ProductClass = "DEV1" OR Device.DeviceInfo.ProductClass = "DEV2") AND Tags.ToUpgrade IS NULL AND Device.DeviceInfo.SerialNumber <> "S0000000001"`
 - ***Provision***  
-	The script launched
+	The Provisions script that Preset will launch.
 - ***Arguments***  
+	List of arguments you can pass to the Provision scritp. The arguments can be accessed from the script through the global ``args`` array.
+	*Ex:* "arg1",2,"arg3"
 
