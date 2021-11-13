@@ -12,8 +12,8 @@ Index
 1. [Documentation](#Documentation)
 2. [Installation](#Installation)
 3. [Start script](#Start/Stop/Restart)
-4. [STUN](#STUN)
-5. [Preset](#Preset)
+4. [Preset](#Preset)
+5. [STUN](#STUN)
 
 Documentation
 -------------
@@ -203,20 +203,6 @@ else
 fi
 ```
 
-STUN
-----
-For using STUN, GenieACS needs to read the paramater `UDPConnectionRequestAddress` (Address and port of CPE to which sending UDP Connection Request).
-You can add the lines below to your provisioning script.
-```
-declare('InternetGatewayDevice.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
-declare('Device.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
-```
-
-You need also to configure the UDP port from which GenieACS will send the connection requests in the file: `/opt/genieacs/genieacs.env`
-```
-GENIEACS_UDP_CONNECTION_REQUEST_PORT=7453
-```
-
 Preset
 ------
 ![Image](img/genieacs-ui_admin_default.png)
@@ -241,6 +227,19 @@ Preset
 - ***Provision***  
 	The Provisions script that Preset will launch.
 - ***Arguments***  
-	List of arguments you can pass to the Provision scritp. The arguments can be accessed from the script through the global ``args`` array.
+	List of arguments you can pass to the Provision scritp. The arguments can be accessed from the script through the global ``args`` array.  
 	*Ex:* "arg1",2,"arg3"
 
+STUN
+----
+For using STUN, GenieACS needs to read the paramater `UDPConnectionRequestAddress` (Address and port of CPE to which sending UDP Connection Request).
+You can add the lines below to your provisioning script.
+```
+declare('InternetGatewayDevice.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
+declare('Device.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
+```
+
+You need also to configure the UDP port from which GenieACS will send the connection requests in the file: `/opt/genieacs/genieacs.env`
+```
+GENIEACS_UDP_CONNECTION_REQUEST_PORT=7453
+```
