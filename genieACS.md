@@ -13,6 +13,7 @@ Index
 2. [Installation](#Installation)
 3. [Start script](#Start/Stop/Restart)
 4. [STUN](#STUN)
+5. [Preset](#Preset)
 
 Documentation
 -------------
