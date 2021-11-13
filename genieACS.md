@@ -3,7 +3,7 @@ GenieACS
 Some notes about the installation and configuration of GenieACS.
 
 UI Port:   3000  
-ACS URL:   http://\<IP\>:7547/*\<any stuff is ok\>
+ACS URL:   http://\<IP\>:7547/*\<here any path is ok\>*
 
 For testing purpose you can use the client: https://github.com/genieacs/genieacs-sim
 
