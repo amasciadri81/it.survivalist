@@ -1,13 +1,24 @@
 GenieACS
 ========
-Some notes about the installation and configuration of GenieACS.  
-Default UI Port: 3000
+Some notes about the installation and configuration of GenieACS.
+
+UI Port:   3000  
+ACS URL:   http://<IP>:7547/
+
+For testing purpose you can use the client: https://github.com/genieacs/genieacs-sim
 
 Index
 -----
-1. [Installation](#Installation)
-2. [Start script](#Start/Stop/Restart)
-3. [STUN](#STUN)
+1. [Documentation](#Documentation)
+2. [Installation](#Installation)
+3. [Start script](#Start/Stop/Restart)
+4. [STUN](#STUN)
+
+Documentation
+-------------
+http://docs.genieacs.com/en/latest/  
+https://github.com/genieacs/genieacs/wiki  
+https://github.com/genieacs/genieacs-gui/wiki
 
 Installation
 ------------
@@ -194,7 +205,7 @@ fi
 STUN
 ----
 For using STUN, GenieACS needs to read the paramater `UDPConnectionRequestAddress` (Address and port of CPE to which sending UDP Connection Request).
-You can add a line below to your provisioning script.
+You can add the lines below to your provisioning script.
 ```
 declare('InternetGatewayDevice.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
 declare('Device.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
@@ -204,4 +215,29 @@ You need also to configure the UDP port from which GenieACS will send the connec
 ```
 GENIEACS_UDP_CONNECTION_REQUEST_PORT=7453
 ```
+
+Preset
+------
+![Image](img/genieacs-ui_admin_default.png)
+
+- ***Name***  
+	Name of Preset
+- ***Channel***  
+	Channel names are used to group presets such that if an exception happen on one channel, only those presets on that channel are temporarily disabled.
+- ***Weight***  
+	Presets with higher weight take precedents.
+- ***Schedule***  
+	If specified, the preset will only be active during the time window specified.
+	Cron expression is in the format of: *seconds minute hour day date*.
+	*Example:* `3600 0 3 * * 1-5` -> every morning from 3 AM to 4 AM for the months of Jan to May. 
+- ***Events***  
+	TR069 events that will trigger the preset. Empty means any event. All event must be present \[it works as *AND*\].  
+	To exclude an event, prepend - to the event name.  
+	*Example for only BOOT:* `-0 BOOTSTRAP,1 BOOT`
+- ***Precondition***  
+	Precondition that will trigger the Preset, it uses SQL language.  
+	*Ex:* `(Device.DeviceInfo.ProductClass = "DEV1" OR Device.DeviceInfo.ProductClass = "DEV2") AND Tags.ToUpgrade IS NULL AND Device.DeviceInfo.SerialNumber <> "S0000000001"`
+- ***Provision***  
+	The script launched
+- ***Arguments***  
 
