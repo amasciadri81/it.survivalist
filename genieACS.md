@@ -283,9 +283,15 @@ To add string in log `/var/log/genieacs/genieacs-cwmp-access.log`.
 ```js script
 log('my string', myVar)
 ```
-***GET***
+***GET***  
+Read the value only if it is missing from the database.
 ```js script
 let version=declare("Device.DeviceInfo.SoftwareVersion",{value: 1}).value[0];
+```
+Read the current value.
+```js script
+const now = Date.now();
+let version=declare("Device.DeviceInfo.SoftwareVersion",{value: now}).value[0];
 ```
 ***SET***
 ```js script
