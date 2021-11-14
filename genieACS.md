@@ -12,8 +12,9 @@ Index
 1. [Documentation](#Documentation)
 2. [Installation](#Installation)
 3. [Start script](#Start/Stop/Restart)
-4. [Preset](#Preset)
-5. [STUN](#STUN)
+4. [HTTPS](#HTTPS)
+5. [Preset](#Preset)
+6. [STUN](#STUN)
 
 Documentation
 -------------
@@ -202,6 +203,47 @@ else
 	echo "Usage: $0 {start|stop|restart|status}"
 fi
 ```
+
+HTTPS
+-----
+To generate a valid certificate you can use [Certbot](https://certbot.eff.org/). Below the configuration for Debian
+```
+sudo -i
+apt-get install snapd
+snap install core; snap refresh core
+snap install --classic certbot
+ln -s /snap/bin/certbot /usr/bin/certbot
+certbot --nginx
+```
+You can find the certificates under `/etc/letsencrypt/live/<site url>/`.  
+Modify the permissions of certificates.
+```
+SITE_URL='<site url>'
+chmod 710 /etc/letsencrypt/live/
+chmod 710 /etc/letsencrypt/archive/
+chgrp genieacs /etc/letsencrypt/live
+chgrp genieacs /etc/letsencrypt/archive
+chgrp genieacs /etc/letsencrypt/live/$SITE_URL
+chgrp genieacs /etc/letsencrypt/archive/$SITE_URL
+
+chmod 640 /etc/letsencrypt/archive/$SITE_URL/fullchain*pem
+chgrp genieacs /etc/letsencrypt/archive/$SITE_URL/privkey*pem
+chgrp genieacs /etc/letsencrypt/archive/$SITE_URL/fullchain*pem
+```
+***GUI***  
+Add certificate to `/opt/genieacs/genieacs.env`
+```
+GENIEACS_UI_SSL_CERT=/etc/letsencrypt/live/<site url>/fullchain.pem
+GENIEACS_UI_SSL_KEY=/etc/letsencrypt/live/<site url>/privkey.pem
+```
+***CWMP***  
+Add certificate to `/opt/genieacs/genieacs.env`
+```
+GENIEACS_CWMP_SSL_CERT=/etc/letsencrypt/live/<site url>/fullchain.pem
+GENIEACS_CWMP_SSL_KEY=/etc/letsencrypt/live/<site url>/privkey.pem
+```
+
+Restart genieacs.
 
 Preset
 ------
