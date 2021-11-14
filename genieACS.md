@@ -27,7 +27,7 @@ Installation
 ------------
 For installation, you can follow the the [GenieACS installation guide](http://docs.genieacs.com/en/latest/installation-guide.html), or can copy and past the commands below (for Debian 64bit).
 
-```
+```bash
 sudo -i
 apt-get install -y gnupg curl wget
 
@@ -208,7 +208,7 @@ fi
 HTTPS
 -----
 To generate a valid certificate you can use [Certbot](https://certbot.eff.org/). Below the configuration for Debian
-```
+```bash
 sudo -i
 apt-get install snapd
 snap install core; snap refresh core
@@ -218,7 +218,7 @@ certbot --nginx
 ```
 You can find the certificates under `/etc/letsencrypt/live/<site url>/`.  
 Modify the permissions of certificates.
-```
+```bash
 SITE_URL='<site url>'
 chmod 710 /etc/letsencrypt/live/
 chmod 710 /etc/letsencrypt/archive/
