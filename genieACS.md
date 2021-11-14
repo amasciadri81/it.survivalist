@@ -1,17 +1,30 @@
 GenieACS
 ========
-Some notes about the installation and configuration of GenieACS.  
-Default UI Port: 3000
+Some notes about the installation and configuration of GenieACS.
+
+UI Port:   3000  
+ACS URL:   http://\<IP\>:7547/*\<here any path is ok\>*
+
+For testing purpose you can use the client: https://github.com/genieacs/genieacs-sim
 
 Index
 -----
-1. [Installation](#Installation)
-2. [Start script](#Start/Stop/Restart)
-3. [STUN](#STUN)
+1. [Documentation](#Documentation)
+2. [Installation](#Installation)
+3. [Start script](#Start/Stop/Restart)
+4. [HTTPS](#HTTPS)
+5. [Preset](#Preset)
+6. [STUN](#STUN)
+
+Documentation
+-------------
+http://docs.genieacs.com/en/latest/  
+https://github.com/genieacs/genieacs/wiki  
+https://github.com/genieacs/genieacs-gui/wiki
 
 Installation
 ------------
-For installation, follow the the [GenieACS installation guide](http://docs.genieacs.com/en/latest/installation-guide.html), or you can copy and past the commands below (for Debian).
+For installation, you can follow the the [GenieACS installation guide](http://docs.genieacs.com/en/latest/installation-guide.html), or can copy and past the commands below (for Debian 64bit).
 
 ```
 sudo -i
@@ -191,10 +204,78 @@ else
 fi
 ```
 
+HTTPS
+-----
+To generate a valid certificate you can use [Certbot](https://certbot.eff.org/). Below the configuration for Debian
+```
+sudo -i
+apt-get install snapd
+snap install core; snap refresh core
+snap install --classic certbot
+ln -s /snap/bin/certbot /usr/bin/certbot
+certbot --nginx
+```
+You can find the certificates under `/etc/letsencrypt/live/<site url>/`.  
+Modify the permissions of certificates.
+```
+SITE_URL='<site url>'
+chmod 710 /etc/letsencrypt/live/
+chmod 710 /etc/letsencrypt/archive/
+chgrp genieacs /etc/letsencrypt/live
+chgrp genieacs /etc/letsencrypt/archive
+chgrp genieacs /etc/letsencrypt/live/$SITE_URL
+chgrp genieacs /etc/letsencrypt/archive/$SITE_URL
+
+chmod 640 /etc/letsencrypt/archive/$SITE_URL/fullchain*pem
+chgrp genieacs /etc/letsencrypt/archive/$SITE_URL/privkey*pem
+chgrp genieacs /etc/letsencrypt/archive/$SITE_URL/fullchain*pem
+```
+***GUI***  
+Add certificate to `/opt/genieacs/genieacs.env`
+```
+GENIEACS_UI_SSL_CERT=/etc/letsencrypt/live/<site url>/fullchain.pem
+GENIEACS_UI_SSL_KEY=/etc/letsencrypt/live/<site url>/privkey.pem
+```
+***CWMP***  
+Add certificate to `/opt/genieacs/genieacs.env`
+```
+GENIEACS_CWMP_SSL_CERT=/etc/letsencrypt/live/<site url>/fullchain.pem
+GENIEACS_CWMP_SSL_KEY=/etc/letsencrypt/live/<site url>/privkey.pem
+```
+
+Restart genieacs.
+
+Preset
+------
+![Image](img/genieacs-ui_admin_default.png)
+
+- ***Name***  
+	Name of Preset
+- ***Channel***  
+	Channel names are used to group presets such that if an exception happen on one channel, only those presets on that channel are temporarily disabled.
+- ***Weight***  
+	Presets with higher weight take precedents.
+- ***Schedule***  
+	If specified, the preset will only be active during the time window specified.
+	Cron expression is in the format of: *seconds minute hour day date*.
+	*Example:* `3600 0 3 * * 1-5` -> every morning from 3 AM to 4 AM for the months of Jan to May. 
+- ***Events***  
+	TR069 events that will trigger the preset. Empty means any event. All event must be present \[it works as *AND*\].  
+	To exclude an event, prepend - to the event name.  
+	*Example for only BOOT:* `-0 BOOTSTRAP,1 BOOT`
+- ***Precondition***  
+	Precondition that will trigger the Preset, it uses SQL language.  
+	*Ex:* `(Device.DeviceInfo.ProductClass = "DEV1" OR Device.DeviceInfo.ProductClass = "DEV2") AND Tags.ToUpgrade IS NULL AND Device.DeviceInfo.SerialNumber <> "S0000000001"`
+- ***Provision***  
+	The Provisions script that Preset will launch.
+- ***Arguments***  
+	List of arguments you can pass to the Provision scritp. The arguments can be accessed from the script through the global ``args`` array.  
+	*Ex:* "arg1",2,"arg3"
+
 STUN
 ----
 For using STUN, GenieACS needs to read the paramater `UDPConnectionRequestAddress` (Address and port of CPE to which sending UDP Connection Request).
-You can add a line below to your provisioning script.
+You can add the lines below to your provisioning script.
 ```
 declare('InternetGatewayDevice.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
 declare('Device.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
@@ -204,4 +285,3 @@ You need also to configure the UDP port from which GenieACS will send the connec
 ```
 GENIEACS_UDP_CONNECTION_REQUEST_PORT=7453
 ```
-
