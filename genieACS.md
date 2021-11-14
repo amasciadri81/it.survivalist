@@ -281,7 +281,7 @@ Here you can add the scripts used in Presets, scritps must be written in java sc
 ***LOG***  
 To add string in log `/var/log/genieacs/genieacs-cwmp-access.log`.
 ```js script
-log('my string', myVar)
+log('my string')
 ```
 ***GET***  
 Read the value only if it is missing from the database.
