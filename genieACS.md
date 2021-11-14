@@ -14,7 +14,8 @@ Index
 3. [Start script](#Start/Stop/Restart)
 4. [HTTPS](#HTTPS)
 5. [Preset](#Preset)
-6. [STUN](#STUN)
+6. [Provisions](#Provisions)
+7. [STUN](#STUN)
 
 Documentation
 -------------
@@ -271,6 +272,25 @@ Preset
 - ***Arguments***  
 	List of arguments you can pass to the Provision scritp. The arguments can be accessed from the script through the global ``args`` array.  
 	*Ex:* "arg1",2,"arg3"
+
+Provisions
+----------
+![Image](img/genieacs-ui_admin_provisions.png)
+Here you can add the scripts used in Presets, scritps must be written in java script.
+
+***LOG***  
+To add string in log `/var/log/genieacs/genieacs-cwmp-access.log`.
+```js script
+log('my string', myVar)
+```
+***GET***
+```js script
+let version=declare("Device.DeviceInfo.SoftwareVersion",{value: 1}).value[0];
+```
+***SET***
+```js script
+declare("Device.ManagementServer.URL", null, {value: "https://myACS/"});
+```
 
 STUN
 ----
