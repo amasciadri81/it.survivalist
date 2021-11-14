@@ -275,7 +275,7 @@ Preset
 
 Provisions
 ----------
-![Image](img/genieacs-ui_admin_provisions.png)
+![Image](img/genieacs-ui_admin_provisions.png)  
 Here you can add the scripts used in Presets, scritps must be written in java script.
 
 ***LOG***  
