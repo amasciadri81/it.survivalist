@@ -302,7 +302,7 @@ STUN
 ----
 For using STUN, GenieACS needs to read the paramater `UDPConnectionRequestAddress` (Address and port of CPE to which sending UDP Connection Request).
 You can add the lines below to your provisioning script.
-```
+```js script
 declare('InternetGatewayDevice.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
 declare('Device.ManagementServer.UDPConnectionRequestAddress',{value: 1}).value[0];
 ```
