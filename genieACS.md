@@ -263,15 +263,15 @@ Preset
 - ***Events***  
 	TR069 events that will trigger the preset. Empty means any event. All event must be present \[it works as *AND*\].  
 	To exclude an event, prepend - to the event name.  
-	*Example for only BOOT:* `-0 BOOTSTRAP,1 BOOT`
+	*Example: BOOT but not the first* -> `-0 BOOTSTRAP,1 BOOT`
 - ***Precondition***  
 	Precondition that will trigger the Preset, it uses SQL language.  
-	*Ex:* `(Device.DeviceInfo.ProductClass = "DEV1" OR Device.DeviceInfo.ProductClass = "DEV2") AND Tags.ToUpgrade IS NULL AND Device.DeviceInfo.SerialNumber <> "S0000000001"`
+	*Example:* `(Device.DeviceInfo.ProductClass = "DEV1" OR Device.DeviceInfo.ProductClass = "DEV2") AND Tags.ToUpgrade IS NULL AND Device.DeviceInfo.SerialNumber <> "S0000000001"`
 - ***Provision***  
 	The Provisions script that Preset will launch.
 - ***Arguments***  
 	List of arguments you can pass to the Provision scritp. The arguments can be accessed from the script through the global ``args`` array.  
-	*Ex:* "arg1",2,"arg3"
+	*Example:* `"arg1",2,"arg3"`
 
 Provisions
 ----------
