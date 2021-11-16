@@ -27,22 +27,27 @@ Installation
 ------------
 For installation, you can follow the the [GenieACS installation guide](http://docs.genieacs.com/en/latest/installation-guide.html), or can copy and past the commands below (for Debian 64bit).
 
+Be root and check if necessary software is installed.
 ```bash
 sudo -i
 apt-get install -y gnupg curl wget
-
-# INSTALL Node.js
+```
+Install Node JS.
+```bash
 curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 apt-get install -y nodejs
-
-# INSTALL MONGO DB
+```
+Install MongoDB.
+```bash
 wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
 echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main" > /etc/apt/sources.list.d/mongodb-org-5.0.list
 apt-get update
 apt-get install -y mongodb-org
 apt-get clean
-
-# INSTALL GENIE ACS
+```
+Install GenieACS, add user genieacs to the system, make folder and config file.
+```bash
+# INSTALL GENIEACS
 npm install -g genieacs
 
 # ADD USER
@@ -68,8 +73,9 @@ NODE_OPTIONS=--enable-source-maps
 GENIEACS_EXT_DIR=/opt/genieacs/ext
 EOL
 echo "GENIEACS_UI_JWT_SECRET=$(openssl rand -base64 45)" >> /opt/genieacs/genieacs.env
-
-# GENERATE SYSTEMCTL SCRIPTS
+```
+Generate systemctl scripts
+```bash
 cat << EOL > /etc/systemd/system/genieacs-cwmp.service
 [Unit]
 Description=GenieACS CWMP
@@ -125,8 +131,9 @@ ExecStart=/usr/local/bin/genieacs-ui
 [Install]
 WantedBy=default.target
 EOL
-
-# SET LOGROTATE
+```
+Generate logrotate file.
+```bash
 cat << EOL > /etc/logrotate.d/genieacs
 /var/log/genieacs/*.log /var/log/genieacs/*.yaml {
     daily
@@ -136,8 +143,9 @@ cat << EOL > /etc/logrotate.d/genieacs
     dateext
 }
 EOL
-
-# START
+```
+Start GenieACS.
+```bash
 systemctl enable mongod
 systemctl start mongod
 systemctl status mongod
