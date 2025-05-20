@@ -21,7 +21,7 @@ in file
 ```sh
 /etc/NetworkManager/NetworkManager.conf
 ``` 
-add line
+add line to main section
 ```sh
 auth-polkit=false 
 ```
